@@ -1,0 +1,75 @@
+spring:
+  application:
+    name: cloudpulse-backend
+  profiles:
+    active: dev
+
+cloudpulse:
+  http:
+    connect-timeout: 5s
+    request-timeout: 5s
+    max-redirects: 3
+    max-response-bytes: 65536
+    user-agent: CloudPulse/1.0 health monitor
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:h2:mem:cloudpulse;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+cloudpulse:
+  default-evaluation-strategy: NORMAL
+  scheduler:
+    enabled: true
+    sync-delay-ms: 5000
+  demo:
+    standard-url: http://localhost:8081/health
+    legacy-url: http://localhost:8082/health
+    flaky-url: http://localhost:8083/health
+  http:
+    allowed-hosts:
+      - localhost
+
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+  datasource:
+    url: jdbc:postgresql://postgres:5432/cloudpulse
+    username: cloudpulse
+    password: cloudpulse
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+cloudpulse:
+  default-evaluation-strategy: NORMAL
+  scheduler:
+    enabled: true
+    sync-delay-ms: 5000
+  demo:
+    standard-url: http://demo-standard:8081/health
+    legacy-url: http://demo-legacy:8082/health
+    flaky-url: http://demo-flaky:8083/health
+  http:
+    allowed-hosts:
+      - demo-standard
+      - demo-legacy
+      - demo-flaky
